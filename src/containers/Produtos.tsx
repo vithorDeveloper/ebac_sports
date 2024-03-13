@@ -1,19 +1,17 @@
+/* eslint-disable prettier/prettier */
 import { Produto as ProdutoType } from '../App'
 import Produto from '../components/Produto'
+import { useGetProdutosQuery } from '../services/api'
 
 import * as S from './styles'
 
 type Props = {
-  produtos: ProdutoType[]
   favoritos: ProdutoType[]
-  adicionarAoCarrinho: (produto: ProdutoType) => void
   favoritar: (produto: ProdutoType) => void
 }
 
 const ProdutosComponent = ({
-  produtos,
   favoritos,
-  adicionarAoCarrinho,
   favoritar
 }: Props) => {
   const produtoEstaNosFavoritos = (produto: ProdutoType) => {
@@ -23,16 +21,19 @@ const ProdutosComponent = ({
     return IdsDosFavoritos.includes(produtoId)
   }
 
+  const {data: produtos, isLoading} = useGetProdutosQuery()
+
+  if(isLoading) return <h2>Buscando informações...</h2>
+
   return (
     <>
       <S.Produtos>
-        {produtos.map((produto) => (
+        {produtos?.map((produto) => (
           <Produto
             estaNosFavoritos={produtoEstaNosFavoritos(produto)}
             key={produto.id}
             produto={produto}
             favoritar={favoritar}
-            aoComprar={adicionarAoCarrinho}
           />
         ))}
       </S.Produtos>
